@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import toast from "react-hot-toast";
 
-function Apply_Jobs() {
+function ApplyJobs() {
   const [totalTime, setTotalTime] = useState({ totalHour: 0, totalMin: 0 });
   const [readStart, setReadStart] = useState({ hours: null, min: null });
   const [resetTime, setResetTime] = useState({ day: 0, month: 0, year: 0 });
@@ -87,4 +87,4 @@ function Apply_Jobs() {
   );
 }
 
-export default Apply_Jobs;
+export default ApplyJobs;

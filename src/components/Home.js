@@ -1,6 +1,6 @@
 import React from "react";
 import Read from "./Read";
-import Apply_Jobs from "./Apply_Jobs";
+import Apply_Jobs from "./ApplyJobs";
 import Learning from "./Learning";
 import Non_Productive from "./NonProductive";
 import OfficeWork from "./OfficeWork";

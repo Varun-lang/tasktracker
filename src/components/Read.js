@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import Apply_Jobs from "./Apply_Jobs";
 import toast from "react-hot-toast";
 
 function Read() {
