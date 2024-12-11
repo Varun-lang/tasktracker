@@ -1,11 +1,11 @@
 import React from "react";
 import Read from "./Read";
-import Apply_Jobs from "./ApplyJobs";
 import Learning from "./Learning";
-import Non_Productive from "./NonProductive";
 import OfficeWork from "./OfficeWork";
 import Sleep from "./Sleep";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
+import ApplyJobs from "./ApplyJobs";
+import NonProductive from "./NonProductive";
 
 function Home() {
   // Inline styles for the heading box
@@ -56,7 +56,7 @@ function Home() {
         <div className="col-md-4 mb-4">
           <div className="card bg-dark text-white shadow-lg">
             <div className="card-body">
-              <Apply_Jobs />
+              <ApplyJobs />
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ function Home() {
         <div className="col-md-4 mb-4">
           <div className="card bg-dark text-white shadow-lg">
             <div className="card-body">
-              <Non_Productive />
+              <NonProductive />
             </div>
           </div>
         </div>
