@@ -1,64 +1,106 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-function OfficeWork() {
-  const [totalTime, setTotalTime] = useState({ totalHour: 0, totalMin: 0 });
-  const [readStart, setReadStart] = useState({ hours: null, min: null });
-  const [resetTime, setResetTime] = useState({ day: 0, month: 0, year: 0 });
+const OfficeWork = () => {
+  // Load state from localStorage or initialize to default values
+  const loadState = () => {
+    const OfficeWorktotalTime = JSON.parse(
+      localStorage.getItem("OfficeWorktotalTime")
+    ) || { totalHour: 0, totalMin: 0 };
+    const OfficeWorkresetTime = JSON.parse(
+      localStorage.getItem("OfficeWorkresetTime")
+    ) || { day: 0, month: 0, year: 0 };
+    const OfficeWorkflag =
+      JSON.parse(localStorage.getItem("OfficeWorkflag")) || false;
+    const OfficeWorkstartFlag =
+      JSON.parse(localStorage.getItem("OfficeWorkstartFlag")) || false;
+    const OfficeWorkstartTime =
+      JSON.parse(localStorage.getItem("OfficeWorkstartTime")) || null; // Add startTime in localStorage
+    return {
+      totalTime: OfficeWorktotalTime,
+      resetTime: OfficeWorkresetTime,
+      flag: OfficeWorkflag,
+      startFlag: OfficeWorkstartFlag,
+      startTime: OfficeWorkstartTime,
+    };
+  };
 
-  const [flag, setFlag] = useState(false); // Use state for flag
+  const [OfficeWorktotalTime, setOfficeWorkTotalTime] = useState(
+    loadState().totalTime
+  );
+  const [OfficeWorkresetTime, setOfficeWorkResetTime] = useState(
+    loadState().resetTime
+  );
+  const [OfficeWorkflag, setOfficeWorkFlag] = useState(loadState().flag);
+  const [OfficeWorkstartTime, setOfficeWorkStartTime] = useState(
+    loadState().startTime
+  );
 
-  const currentDate = new Date();
+  useEffect(() => {
+    // Save state to localStorage whenever it changes
+    localStorage.setItem(
+      "OfficeWorktotalTime",
+      JSON.stringify(OfficeWorktotalTime)
+    );
+    localStorage.setItem(
+      "OfficeWorkresetTime",
+      JSON.stringify(OfficeWorkresetTime)
+    );
+    localStorage.setItem("OfficeWorkflag", JSON.stringify(OfficeWorkflag));
+    localStorage.setItem(
+      "OfficeWorkstartTime",
+      JSON.stringify(OfficeWorkstartTime)
+    ); // Save startTime to localStorage
+  }, [
+    OfficeWorktotalTime,
+    OfficeWorkresetTime,
+    OfficeWorkflag,
+    OfficeWorkstartTime,
+  ]);
 
   function start() {
-    setFlag(true);
-    if (readStart.hours == null) {
-      const hours = currentDate.getHours();
-      const min = currentDate.getMinutes();
-      setReadStart({ hours, min });
-      console.log({ hours, min });
-      toast.success("Timer Started");
-    }
+    setOfficeWorkFlag(true);
+    const startDate = new Date();
+    setOfficeWorkStartTime(startDate); // Save the start time
+    toast.success("Timer Started");
   }
 
   function stop() {
-    setFlag(false);
-    if (flag) {
-      const currentDate = new Date();
-      const stopHour = currentDate.getHours();
-      const stopMin = currentDate.getMinutes();
-      console.log(stopHour, stopMin);
+    setOfficeWorkFlag(false);
+    if (OfficeWorkflag && OfficeWorkstartTime) {
+      const stopDate = new Date();
+      let differenceInMs = stopDate - new Date(OfficeWorkstartTime); // Use startTime to calculate difference
 
-      // Calculate total minutes first to handle cases where minutes roll over
-      let totalMin = stopMin - readStart.min;
-      let totalHour = stopHour - readStart.hours;
+      let currentHour = Math.floor(differenceInMs / (1000 * 60 * 60));
+      let currentMin = Math.floor(
+        (differenceInMs % (1000 * 60 * 60)) / (1000 * 60)
+      );
 
-      if (totalMin < 0) {
-        totalMin += 60; // If minutes are negative, add 60 to normalize
-        totalHour -= 1; // Subtract 1 hour since minutes are less
-      }
+      // Add the current time to the previous time
+      const newTotalHour = OfficeWorktotalTime.totalHour + currentHour;
+      const newTotalMin = OfficeWorktotalTime.totalMin + currentMin;
 
-      // If totalHour is negative, adjust for 24-hour format
-      if (totalHour < 0) {
-        totalHour += 24;
-      }
+      // Handle overflow of minutes
+      const finalTotalHour = newTotalHour + Math.floor(newTotalMin / 60);
+      const finalTotalMin = newTotalMin % 60;
 
-      setTotalTime({ totalHour, totalMin });
-      console.log({ totalHour, totalMin });
-      toast.success("Timer Stoped!");
+      setOfficeWorkTotalTime({
+        totalHour: finalTotalHour,
+        totalMin: finalTotalMin,
+      });
+      toast.success("Timer Stopped!");
     }
   }
 
   function reset() {
     stop();
-    const currentDate = new Date();
-    setTotalTime({ totalHour: 0, totalMin: 0 });
-    setReadStart({ hours: null, min: null });
-    setResetTime({
-      day: currentDate.getDate(),
-      month: currentDate.getMonth() + 1, // Months are 0-indexed
-      year: currentDate.getFullYear(),
+    const resetDate = new Date();
+    setOfficeWorkTotalTime({ totalHour: 0, totalMin: 0 });
+    setOfficeWorkStartTime(null); // Reset the startTime
+    setOfficeWorkResetTime({
+      day: resetDate.getDate(),
+      month: resetDate.getMonth() + 1, // Months are 0-indexed
+      year: resetDate.getFullYear(),
     });
     toast.success("Timer Reset");
   }
@@ -68,24 +110,25 @@ function OfficeWork() {
       <div className="card" style={{ width: "18rem", padding: "20px" }}>
         <div className="card-body">
           <div className="d-flex justify-content-center">
-            <h5 className="card-title">Office Work</h5>
-            {/* Display the status dot next to the title */}
+            <h5 className="card-title">OfficeWork</h5>
             <span
               style={{
                 width: "10px",
                 height: "10px",
                 borderRadius: "50%",
-                backgroundColor: flag ? "green" : "red",
+                backgroundColor: OfficeWorkflag ? "green" : "red",
                 display: "inline-block",
               }}
             ></span>
           </div>
           <p className="card-text text-center">
-            Last Reset: {resetTime.day}-{resetTime.month}-{resetTime.year}
+            Last Reset: {OfficeWorkresetTime.day}-{OfficeWorkresetTime.month}-
+            {OfficeWorkresetTime.year}
           </p>
           <div className="text-center">
             <p className="mb-0">
-              Total Time: {totalTime.totalHour} : {totalTime.totalMin}
+              Total Time: {OfficeWorktotalTime.totalHour} :{" "}
+              {OfficeWorktotalTime.totalMin}
             </p>
           </div>
           <div className="d-flex justify-content-around mt-4">
@@ -103,6 +146,6 @@ function OfficeWork() {
       </div>
     </div>
   );
-}
+};
 
 export default OfficeWork;

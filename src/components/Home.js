@@ -6,6 +6,7 @@ import Sleep from "./Sleep";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import ApplyJobs from "./ApplyJobs";
 import NonProductive from "./NonProductive";
+import Test from "./Test";
 
 function Home() {
   // Inline styles for the heading box
